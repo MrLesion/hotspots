@@ -1,8 +1,13 @@
 import Vue from 'vue'
 import App from './App.vue'
 import store from './store'
+import Unicon from 'vue-unicons/dist/vue-unicons-vue2.umd'
+import { uniAlignLeft, uniFileAlt, uniShoppingCart, uniExclamationTriangle, uniSearchPlus, uniSearchMinus, uniTrashAlt} from 'vue-unicons/dist/icons'
 
 Vue.config.productionTip = false
+
+Unicon.add([uniAlignLeft, uniFileAlt, uniShoppingCart, uniExclamationTriangle, uniSearchPlus, uniSearchMinus, uniTrashAlt])
+Vue.use(Unicon)
 
 new Vue({
   store,

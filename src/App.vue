@@ -3,14 +3,18 @@
     <div class="tool-bar">
       <ul class="tool-bar-left">
         <li>
-          <button type="button" v-on:click="reset">Reset</button></li>
+          <button type="button" v-on:click="reset"><unicon name="trash-alt" fill="#d3603c" width="12" height="12"></unicon> Reset</button></li>
       </ul>
       <ul class="tool-bar-right">
         <li>
           <div class="zoom-controls">
-            <button v-on:click="zoomOut" type="button"> - </button>
+            <button v-on:click="zoomOut" type="button" :disabled="(zoomLevel === 10)">
+              <unicon name="search-minus" fill="#1f1f1f" width="14" height="14"></unicon>
+            </button>
             <span class="text-span">{{ zoomLevel }}%</span>
-            <button v-on:click="zoomIn" type="button"> + </button>
+            <button v-on:click="zoomIn" type="button" :disabled="(zoomLevel === 100)">
+              <unicon name="search-plus" fill="#1f1f1f" width="14" height="14"></unicon>
+            </button>
           </div>
         </li>
         <li>
@@ -182,12 +186,19 @@ body,html{
   }
   .zoom-controls{
     .text-span{
-      width: 60px;
+      width: 50px;
       display: inline-block;
       text-align: center;
+      border-left: 1px solid #d1d1d1;
+      border-right: 1px solid #d1d1d1;
+      background-color: #d1d1d1;
     }
     button{
-      width: 20px;
+      width: 30px;
+      &:disabled{
+        opacity: .5;
+        pointer-events: none;
+      }
     }
   }
   button, select{

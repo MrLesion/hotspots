@@ -8,6 +8,12 @@
       v-on:click="setActive"
       v-on:dragend="onDragStop"
   >
+    <div class="type-icon">
+      <unicon v-if="hotspot.type === ''" name="exclamation-triangle" fill="white" width="14" height="14"></unicon>
+      <unicon v-else-if="hotspot.type === 'content'" name="align-left" fill="#1f1f1f" width="14" height="14"></unicon>
+      <unicon v-else-if="hotspot.type === 'paragraph'" name="file-alt" fill="#1f1f1f" width="14" height="14"></unicon>
+      <unicon v-else-if="hotspot.type === 'product'" name="shopping-cart" fill="#1f1f1f" width="14" height="14"></unicon>
+    </div>
     <div v-if="isActive" class="hotspot-point-popover">
       <div class="hotspot-point-popover-form">
         <div class="hotspot-point-popover-row">
@@ -19,7 +25,7 @@
           </select>
         </div>
         <div v-if="hotspot.type === 'content'" class="hotspot-point-popover-row">
-          <textarea v-model="hotspot.content" v-on:keyup="update"></textarea>
+          <textarea v-model="hotspot.content" v-on:keyup="debounceInput"></textarea>
         </div>
         <div v-if="hotspot.type === 'product'" class="hotspot-point-popover-row">
           <input type="hidden" v-model="hotspot.product.id">
@@ -45,11 +51,15 @@
 
 <script>
 
+import utils from '../utils';
+let vm;
+
 export default {
   name: 'Hotspot',
   props: ['hotspot', 'index', 'image'],
   data() {
     return {
+      isTyping: false,
       isDragging: false
     }
   },
@@ -59,6 +69,9 @@ export default {
     }
   },
   methods: {
+    debounceInput: utils.debounce( () => {
+        vm.update();
+      }, 250, false),
     update(){
       this.$store.dispatch('updateHotspot', this.hotspot);
     },
@@ -100,11 +113,11 @@ export default {
   },
   created() {
     this.setActive();
+    vm = this;
   }
 }
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
+s
 <style scoped lang="scss">
 .hotspots-point {
   height: 20px;
@@ -118,38 +131,28 @@ export default {
   background-color:#EEE;
   box-shadow: 0 0 2px 1px rgba(0,0,0,.3);
   font-size: .75em;
-  &::before, &::after{
-    position: absolute;
-    margin-left: 50%;
-    transform: translateX(-50%);
-    color: #555;
-    background-color: rgba(255,255,255, .6);
-    padding: 3px;
-    text-transform: capitalize;
-    white-space: nowrap;
-  }
   &::after{
     content: attr(title);
     top: 100%;
     margin-top: 3px;
+    position: absolute;
+    margin-left: 50%;
+    transform: translateX(-50%);
+    color: #555;
+    font-size: .85em;
+    background-color: rgba(255,255,255, .75);
+    padding: 3px;
+    text-transform: capitalize;
+    white-space: nowrap;
   }
-  &::before{
-    content: attr(data-type);
-    top: calc(100% + 23px);
+  .type-icon{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 3px;
   }
   &.is-empty{
     background-color: #d3603c;
-    &:before{
-      content: '!';
-      top: auto;
-      width: 20px;
-      margin-top: 3px;
-      text-align: center;
-      color: white;
-      
-      padding:0;
-      background-color: transparent;
-    }
   }
   .hotspot-point-popover{
     position: absolute;
