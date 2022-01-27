@@ -52,7 +52,7 @@
 <script>
 
 import utils from '../utils';
-let vm;
+let _vueInstance;
 
 export default {
   name: 'Hotspot',
@@ -70,7 +70,7 @@ export default {
   },
   methods: {
     debounceInput: utils.debounce( () => {
-        vm.update();
+      _vueInstance.update();
       }, 250, false),
     update(){
       this.$store.dispatch('updateHotspot', this.hotspot);
@@ -113,7 +113,7 @@ export default {
   },
   created() {
     this.setActive();
-    vm = this;
+    _vueInstance = this;
   }
 }
 </script>

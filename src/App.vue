@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="app">
     <div class="tool-bar">
       <ul class="tool-bar-left">
         <li>
@@ -27,7 +27,7 @@
         </li>
       </ul>
     </div>
-    <div id="app" class="hotspots-container" :style="'width:'+zoomLevel + '%'">
+    <div class="hotspots-container" :style="'width:'+zoomLevel + '%'">
       <img 
           :src="image"
           class="hotspots-image"
@@ -148,10 +148,16 @@ body,html{
   padding: 0;
   margin:0;
   font-family: Arial;
-  background-color: #f1f1f1;
+  background-color: #414141;
 }
 *{
   box-sizing: border-box;
+}
+#app{
+  max-width: 1600px;
+  margin:0 auto;
+  box-shadow: 0 0 0 1px rgba(0,0,0, .5);
+  background-color: #717171;
 }
 .tool-bar{
   background-color: #e1e1e1;
@@ -159,6 +165,7 @@ body,html{
   box-shadow: 0 1px 3px rgba(0,0,0, .3);
   z-index: 1;
   position: relative;
+  margin-bottom: 5px;
   ul{
     padding: 0;
     margin:0;
@@ -217,7 +224,7 @@ body,html{
   display: block;
   position: relative;
   margin: 0 auto;
-  transition: width .25s ease;
+  transition: width .15s ease;
 
   .hotspots-image {
     max-width: 100%;
