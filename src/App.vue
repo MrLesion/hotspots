@@ -3,7 +3,11 @@
     <div class="tool-bar">
       <ul class="tool-bar-left">
         <li>
-          <button type="button" v-on:click="reset"><unicon name="trash-alt" fill="#d3603c" width="12" height="12"></unicon> Reset</button></li>
+          <button type="button" v-on:click="reset"><unicon name="trash-alt" fill="#d3603c" width="12" height="12"></unicon> Reset</button>
+        </li>
+        <li>
+          <button type="button" ><unicon name="image-plus" fill="#d3603c" width="12" height="12"></unicon> Select image</button>
+        </li>
       </ul>
       <ul class="tool-bar-right">
         <li>
@@ -36,6 +40,8 @@
           v-on:click="addHotspot"
           v-on:contextmenu="onContextMenu"
           ref="hotspotImage"
+          v-on:dragover="onDragOver"
+          v-on:drop="onDragStop"
       >
       <Hotspot 
           if="imageReady"
@@ -45,6 +51,7 @@
           :image="$refs.hotspotImage"
           :ref="'hotspot'+index"
           :index="index"
+          @onHotspotMove="onHotspotMove"
       />
     </div>
   </div>
@@ -62,7 +69,8 @@ export default {
     return {
       zoomLevel: 100,
       image: '',
-      imageReady: false
+      imageReady: false,
+      movingHotspot: null
     }
   },
   computed: {
@@ -120,6 +128,26 @@ export default {
       
       this.$store.dispatch('addHotspot', hotspot);
     },
+    onHotspotMove(hotspot){
+      this.movingHotspot = hotspot;
+    },
+    onDragOver(event){
+      event.preventDefault();
+      return false;
+    },
+    onDragStop(event){
+      event.preventDefault();
+      const image        = this.$refs.hotspotImage;
+      const relativeOffset = image.offsetParent;
+      const dropPosition = {
+        x: ( ( ( event.pageX - relativeOffset.offsetLeft ) + document.documentElement.scrollLeft ) / image.clientWidth * 100 ),
+        y: ( ( ( event.pageY - relativeOffset.offsetTop ) + document.documentElement.scrollTop ) / image.clientHeight * 100 )
+      };
+      this.movingHotspot.y = dropPosition.y;
+      this.movingHotspot.x = dropPosition.x;
+      this.$store.dispatch('updateHotspot', this.movingHotspot);
+      this.movingHotspot = null;
+    },
     zoomIn(){
       if(this.zoomLevel < 100){
         this.zoomLevel += 10;
@@ -144,6 +172,7 @@ export default {
 </script>
 
 <style lang="scss">
+
 body,html{
   padding: 0;
   margin:0;
@@ -166,6 +195,7 @@ body,html{
   z-index: 1;
   position: relative;
   margin-bottom: 5px;
+  padding: 0 1em;
   ul{
     padding: 0;
     margin:0;
@@ -173,12 +203,14 @@ body,html{
     display: flex;
     &.tool-bar-left{
       margin-right: auto;
+      border-left: 1px solid #d1d1d1;
       li{
         border-right: 1px solid #d1d1d1;
       }
     }
     &.tool-bar-right{
       margin-left: auto;
+      border-right: 1px solid #d1d1d1;
       li{
         border-left: 1px solid #d1d1d1;
       }

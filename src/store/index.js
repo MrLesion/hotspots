@@ -76,9 +76,9 @@ export default new Vuex.Store({
     },
     addHotspot(store, hotspot){
       hotspot.id =   '';
-      let characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
-      for ( let i = 0; i < 12; i++ ) {
-        hotspot.id += characters.charAt(Math.floor(Math.random() * 36));
+      let characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      for ( let i = 0; i < 16; i++ ) {
+        hotspot.id += characters.charAt(Math.floor(Math.random() * 62));
       }
       store.commit('addHotspot', hotspot);
     },

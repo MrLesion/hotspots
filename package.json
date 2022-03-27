@@ -11,6 +11,7 @@
     "core-js": "^3.6.5",
     "vue": "^2.6.11",
     "vue-unicons": "^3.3.1",
+    "vue-wysiwyg": "^1.7.2",
     "vuex": "^3.4.0",
     "webpack-dev-server": "^4.7.3"
   },

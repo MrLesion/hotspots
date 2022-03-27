@@ -1,12 +1,12 @@
 <template>
   <div 
-      :class="hotspot.type === '' ? 'hotspots-point is-empty' : 'hotspots-point'"
+      :class="getClassList"
       :style="`top: ${hotspot.y}%; left: ${hotspot.x}%;`"
       :data-type="hotspot.type"
       :title="'hotspot #'+index"
       draggable="true"
       v-on:click="setActive"
-      v-on:dragend="onDragStop"
+      v-on:dragstart="onHotspotMove"
   >
     <div class="type-icon">
       <unicon v-if="hotspot.type === ''" name="exclamation-triangle" fill="white" width="14" height="14"></unicon>
@@ -25,7 +25,7 @@
           </select>
         </div>
         <div v-if="hotspot.type === 'content'" class="hotspot-point-popover-row">
-          <textarea v-model="hotspot.content" v-on:keyup="debounceInput"></textarea>
+          <wysiwyg v-model="hotspot.content" />
         </div>
         <div v-if="hotspot.type === 'product'" class="hotspot-point-popover-row">
           <input type="hidden" v-model="hotspot.product.id">
@@ -50,10 +50,6 @@
 
 
 <script>
-
-import utils from '../utils';
-let _vueInstance;
-
 export default {
   name: 'Hotspot',
   props: ['hotspot', 'index', 'image'],
@@ -66,15 +62,20 @@ export default {
   computed:{
     isActive(){
       return this.hotspot.id === this.$store.getters.active;
+    },
+    getClassList(){
+      let classList = ['hotspots-point'];
+      if(this.hotspot.type === ''){
+        classList.push('is-empty');
+      }
+      if(this.isActive){
+        classList.push('is-active');
+      }
+      
+      return classList.join(' ');
     }
   },
   methods: {
-    debounceInput: utils.debounce( () => {
-      _vueInstance.update();
-      }, 250, false),
-    update(){
-      this.$store.dispatch('updateHotspot', this.hotspot);
-    },
     deleteHotspot(){
       if(confirm('Delete hotspot?')){
         this.$store.dispatch('deleteHotspot', this.hotspot);
@@ -91,34 +92,25 @@ export default {
       let isProductDialogClosedInterval = setInterval( () => {
         if ( productDialog.closed === true ) {
           clearInterval( isProductDialogClosedInterval );
-          console.log('update');
         }
       }, 50 );
     },
     showParagraphSelector(){
       alert('Pop DW product selector');
     },
-    onDragStop(event){
-      event.preventDefault();
-      const image        = this.image;
-      const relativeOffset = image.offsetParent;
-      const dropPosition = {
-        x: ( ( ( event.pageX - relativeOffset.offsetLeft ) + document.body.scrollLeft ) / image.clientWidth * 100 ),
-        y: ( ( ( event.pageY - relativeOffset.offsetTop ) + document.body.scrollTop ) / image.clientHeight * 100 )
-      };
-      this.hotspot.y = dropPosition.y;
-      this.hotspot.x = dropPosition.x;
-      this.update();
+    
+    onHotspotMove(){
+      this.$emit('onHotspotMove', this.hotspot);
     }
   },
   created() {
     this.setActive();
-    _vueInstance = this;
   }
 }
 </script>
 s
 <style scoped lang="scss">
+@import "~vue-wysiwyg/dist/vueWysiwyg.css";
 .hotspots-point {
   height: 20px;
   width: 20px;
@@ -154,10 +146,13 @@ s
   &.is-empty{
     background-color: #d3603c;
   }
+  &.is-active{
+    z-index: 999;
+  }
   .hotspot-point-popover{
     position: absolute;
     height:auto;
-    width: 200px;
+    width: 300px;
     background: rgba(255,255,255,.8);
     bottom: 28px;
     margin-left: 50%;
@@ -204,5 +199,9 @@ s
       }
     }
   }
+}
+
+.editr--content{
+  cursor: auto;
 }
 </style>
